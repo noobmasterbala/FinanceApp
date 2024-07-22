@@ -1,23 +1,24 @@
-import logo from './logo.svg';
+import React, { useState } from 'react';
 import './App.css';
+import Expenses from './components/Expenses';
+import ExpensesChart from './components/ExpensesChart';
+import AddExpense from './components/AddExpense';
+import ExpensesPieChart from './components/ExpensesPieChart';
 
 function App() {
+  const [categories, setCategories] = useState(['groceries', 'tech', 'rent', 'electricity']); // Initial categories
+
+  const handleAddCategory = (newCategory) => {
+    setCategories([...categories, newCategory]);
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Smart Finance App</h1>
+      <AddExpense onAddCategory={handleAddCategory} />
+      <Expenses />
+      <ExpensesChart />
+      <ExpensesPieChart />
     </div>
   );
 }
