@@ -15,11 +15,12 @@ mongoose.connect('mongodb://localhost:27017/finance');
 
 // Schema and Model
 const expenseSchema = new mongoose.Schema({
-  description: String,
-  amount: Number,
-  category: String, // New field for category
-});
-
+    description: String,
+    amount: Number,
+    category: String,
+    date: { type: Date, default: Date.now } // New field for date
+  });
+  
 const Expense = mongoose.model('Expense', expenseSchema);
 
 // Routes
@@ -29,19 +30,19 @@ app.get('/api/expenses', async (req, res) => {
 });
 
 app.post('/api/expenses', async (req, res) => {
-  const { description, amount, category } = req.body;
-  const newExpense = new Expense({ description, amount, category });
-  await newExpense.save();
-  res.json(newExpense);
-});
-
-// Update expense
-app.put('/api/expenses/:id', async (req, res) => {
-  const { id } = req.params;
-  const { description, amount, category } = req.body;
-  const updatedExpense = await Expense.findByIdAndUpdate(id, { description, amount, category }, { new: true });
-  res.json(updatedExpense);
-});
+    const { description, amount, category, date } = req.body;
+    const newExpense = new Expense({ description, amount, category, date });
+    await newExpense.save();
+    res.json(newExpense);
+  });
+  
+  app.put('/api/expenses/:id', async (req, res) => {
+    const { id } = req.params;
+    const { description, amount, category, date } = req.body;
+    const updatedExpense = await Expense.findByIdAndUpdate(id, { description, amount, category, date }, { new: true });
+    res.json(updatedExpense);
+  });
+  
 
 // Delete expense
 app.delete('/api/expenses/:id', async (req, res) => {

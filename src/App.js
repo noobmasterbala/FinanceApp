@@ -1,14 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import Expenses from './components/Expenses';
 import ExpensesChart from './components/ExpensesChart';
 import AddExpense from './components/AddExpense';
 import ExpensesPieChart from './components/ExpensesPieChart';
 import Modal from './components/Modal';
+import MonthlySpendingChart from './components/MonthlySpendingChart';
+import WeeklySpendingChart from './components/WeeklySpendingChart';
+
 
 function App() {
   const [categories, setCategories] = useState(['groceries', 'tech', 'rent', 'electricity']);
   const [editingExpense, setEditingExpense] = useState(null);
+  const [totalSpent, setTotalSpent] = useState(0);
+
+
+  useEffect(() => {
+    fetch('/api/expenses')
+      .then(response => response.json())
+      .then(data => {
+        setTotalSpent(data.reduce((sum, expense) => sum + expense.amount, 0));
+      })
+      .catch(error => console.error('Error fetching expenses:', error));
+  }, []);
 
   const handleAddCategory = (newCategory) => {
     setCategories([...categories, newCategory]);
@@ -60,10 +74,13 @@ function App() {
   return (
     <div className="App">
       <h1>Smart Finance App</h1>
+      <h2>Total Spent: ${totalSpent}</h2>
       <AddExpense onAddCategory={handleAddCategory} />
       <Expenses onEdit={handleEditExpense} onDelete={handleDeleteExpense} />
       <ExpensesChart />
       <ExpensesPieChart />
+      <MonthlySpendingChart />
+      <WeeklySpendingChart />
       <Modal show={editingExpense !== null} onClose={handleCloseModal}>
         {editingExpense && (
           <div>
@@ -92,6 +109,12 @@ function App() {
                   <option key={cat} value={cat}>{cat}</option>
                 ))}
               </select>
+              <input
+                type="date"
+                name="date"
+                value={new Date(editingExpense.date).toISOString().substring(0, 10)}
+                onChange={handleChange}
+              />
               <button type="submit">Save</button>
             </form>
           </div>

@@ -5,14 +5,15 @@ const AddExpense = ({ onAddCategory }) => {
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState('');
   const [newCategory, setNewCategory] = useState('');
-  const [categories, setCategories] = useState(['groceries', 'tech', 'rent', 'electricity']); // Initial categories
+  const [date, setDate] = useState(new Date().toISOString().substring(0, 10)); // Default to today
+  const [categories, setCategories] = useState(['groceries', 'tech', 'rent', 'electricity']);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     fetch('/api/expenses', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ description, amount: parseFloat(amount), category: newCategory || category }),
+      body: JSON.stringify({ description, amount: parseFloat(amount), category: newCategory || category, date }),
     })
       .then(response => response.json())
       .then(data => {
@@ -20,6 +21,7 @@ const AddExpense = ({ onAddCategory }) => {
         setAmount('');
         setCategory('');
         setNewCategory('');
+        setDate(new Date().toISOString().substring(0, 10));
         if (newCategory) {
           onAddCategory(newCategory);
           setCategories([...categories, newCategory]);
@@ -53,6 +55,12 @@ const AddExpense = ({ onAddCategory }) => {
         value={newCategory}
         onChange={(e) => setNewCategory(e.target.value)}
         placeholder="Or add new category"
+      />
+      <input
+        type="date"
+        value={date}
+        onChange={(e) => setDate(e.target.value)}
+        placeholder="Date"
       />
       <button type="submit">Add Expense</button>
     </form>
