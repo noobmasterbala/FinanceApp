@@ -10,7 +10,8 @@ app.use(cors());
 app.use(express.json());
 
 // MongoDB connection
-mongoose.connect('mongodb://localhost:27017/finance', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect('mongodb://localhost:27017/finance');
+
 
 // Schema and Model
 const expenseSchema = new mongoose.Schema({
@@ -32,6 +33,21 @@ app.post('/api/expenses', async (req, res) => {
   const newExpense = new Expense({ description, amount, category });
   await newExpense.save();
   res.json(newExpense);
+});
+
+// Update expense
+app.put('/api/expenses/:id', async (req, res) => {
+  const { id } = req.params;
+  const { description, amount, category } = req.body;
+  const updatedExpense = await Expense.findByIdAndUpdate(id, { description, amount, category }, { new: true });
+  res.json(updatedExpense);
+});
+
+// Delete expense
+app.delete('/api/expenses/:id', async (req, res) => {
+  const { id } = req.params;
+  await Expense.findByIdAndDelete(id);
+  res.json({ message: 'Expense deleted' });
 });
 
 // Start server

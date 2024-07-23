@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 
-const Expenses = () => {
+const Expenses = ({ onEdit, onDelete }) => {
   const [expenses, setExpenses] = useState([]);
 
   useEffect(() => {
     fetch('/api/expenses')
       .then(response => response.json())
       .then(data => {
+        console.log('Fetched expenses:', data); // Add this line
         if (data) {
-          console.log('Fetched expenses:', data); // Log fetched data
           setExpenses(data);
         } else {
           console.error('No data received');
@@ -18,7 +18,7 @@ const Expenses = () => {
   }, []);
 
   if (!expenses.length) {
-    return <div>Loading...</div>; // Render loading state if data is not yet available
+    return <div>Loading...</div>;
   }
 
   return (
@@ -26,7 +26,11 @@ const Expenses = () => {
       <h2>Expenses</h2>
       <ul>
         {expenses.map((expense) => (
-          <li key={expense.id}>{expense.description}: ${expense.amount}</li>
+          <li key={expense._id}>
+            {expense.description}: ${expense.amount}
+            <button onClick={() => { console.log('Edit clicked:', expense); onEdit(expense); }}>Edit</button>
+            <button onClick={() => { console.log('Delete clicked:', expense._id); onDelete(expense._id); }}>Delete</button>
+          </li>
         ))}
       </ul>
     </div>
